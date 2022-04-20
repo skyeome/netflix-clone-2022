@@ -1,45 +1,22 @@
-import styled,{ keyframes } from "styled-components";
+import styled from "styled-components";
 
 const Wrapper = styled.div`
   display:flex;
-`;
-const ani = keyframes`
-  0%{
-    transform: rotate(0);
-  }
-  100%{
-    transform: rotate(360deg);
-  }
-`;
-const Emoji = styled.span`
-  font-size: 40px;
-`;
-const Box = styled.div`
-  width:200px;
-  height:200px;
-  background-color: tomato;
-  animation: ${ani} 2s linear infinite;
-  display: flex;
+  width:100vw;
+  height:100vh;
   justify-content: center;
-  align-items: center;
-  ${Emoji}{
-    &:hover{
-      font-size: 50px;
-    }
-    &:active{
-      opacity: 0;
-    }
-  }
+  align-items:center;
+  background-color: ${props => props.theme.backgroundColor};
+`;
+const Title = styled.h1`
+  color:${props => props.theme.textColor};
 `;
 
 function App() {
   return (
     <div className="App">
       <Wrapper>
-        <Box>
-          <Emoji>😃</Emoji>
-        </Box>
-        <Emoji>😡</Emoji>
+        <Title>Hello</Title>
       </Wrapper>
     </div>
   );
