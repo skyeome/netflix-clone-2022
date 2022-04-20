@@ -11,6 +11,9 @@ const ani = keyframes`
     transform: rotate(360deg);
   }
 `;
+const Emoji = styled.span`
+  font-size: 40px;
+`;
 const Box = styled.div`
   width:200px;
   height:200px;
@@ -19,8 +22,7 @@ const Box = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  span{
-    font-size: 40px;
+  ${Emoji}{
     &:hover{
       font-size: 50px;
     }
@@ -35,8 +37,9 @@ function App() {
     <div className="App">
       <Wrapper>
         <Box>
-          <span>😃</span>
+          <Emoji>😃</Emoji>
         </Box>
+        <Emoji>😡</Emoji>
       </Wrapper>
     </div>
   );
