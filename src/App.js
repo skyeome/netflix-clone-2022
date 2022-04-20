@@ -3,29 +3,30 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   display:flex;
 `;
-const Box = styled.div`
-  background-color: ${(props)=>props.bgColor};
-  &:hover{
-    background-color: #fff;
-  }
-  width:100px;
-  height:100px;
+const Btn = styled.button`
+  color: #fff;
+  background-color: tomato;
+  padding:10px;
+  border:0;
+  border-radius: 15px;
 `;
-const Circle = styled(Box)`
-  border-radius: 100%;
-`;
-const Text = styled.span`
-  color:white;
+const Input = styled.input.attrs({type:"text",required:true})`
+  border:1px solid #efefef;
+  border-radius: 5px;
 `;
 
 function App() {
   return (
     <div className="App">
       <Wrapper>
-        <Box bgColor="aqua">
-          <Text>Hello</Text>
-        </Box>
-        <Circle bgColor="tomato"/>
+        <Btn as="a" href="/login">Log in</Btn>
+        <Btn>Log out</Btn>
+      </Wrapper>
+      <Wrapper>
+        <Input />
+        <Input />
+        <Input />
+        <Input />
       </Wrapper>
     </div>
   );
