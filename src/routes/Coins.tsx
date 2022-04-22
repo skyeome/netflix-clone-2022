@@ -1,4 +1,5 @@
 //import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -36,7 +37,7 @@ const CoinItem = styled.li`
     }
   }
 `;
-const Loader = styled.div`
+const Loaders = styled.div`
   text-align: center;
 `;
 const Img = styled.img`
@@ -59,24 +60,18 @@ interface ICoin {
 
 function Coins(){
   const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins);
-  // const [coins, setCoins] = useState<CoinInterface[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // useEffect(()=>{
-  //   (async()=>{
-  //     const json = await (await fetch("https://api.coinpaprika.com/v1/coins")).json();
-  //     setCoins(json.slice(0,50));
-  //     setLoading(false);
-  //   })();
-  // },[]);
   return (
     <Container>
+      <Helmet>
+        <title>코인 목록</title>
+      </Helmet>
       <Header>
         <Title>코인</Title>
       </Header>
       <CoinList>
-        {isLoading ? <Loader>Loading...</Loader> : data?.slice(0,50).map(coin=>
+        {isLoading ? <Loaders>Loading...</Loaders> : data?.slice(0,50).map(coin=>
         <CoinItem key={coin.name}>
-          <Link to={`/${coin.id}`} state={{name:coin.name}} >
+          <Link to={`/${coin.id}/chart`} state={{name:coin.name}} >
             <Img src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`} />
             {coin.name} &rarr;
           </Link>

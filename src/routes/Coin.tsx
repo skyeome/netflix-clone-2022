@@ -1,4 +1,5 @@
 //import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
 import { Link, Route, Routes, useLocation, useMatch, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -185,22 +186,13 @@ function Coin(){
   const priceMatch = useMatch("/:id/price");
   const chartMatch = useMatch("/:id/chart");
   const {isLoading:infoLoading, data:infoData} = useQuery<IInfoData>(["info",id], ()=> fetchCoinInfo(id));
-  const {isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["price",id], ()=> fetchCoinTickers(id));
-  /* const [loading, setLoading] = useState(true);
-  const [info, setInfo] = useState<IInfoData>();
-  const [priceInfo, setPriceInfo] = useState<IPriceData>();
-  useEffect(()=>{
-    (async()=>{
-      const json = await (await fetch(`https://api.coinpaprika.com/v1/coins/${id}`)).json();
-      const priceData = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${id}`)).json();
-      setInfo(json);
-      setPriceInfo(priceData);
-      setLoading(false);
-    })();
-  },[id]); */
+  const {isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["price",id], ()=> fetchCoinTickers(id),{refetchInterval:5000});
   const loading = infoLoading || priceLoading;
   return (
   <Container>
+    <Helmet>
+        <title>{state?.name ? state.name : loading ? "Loading..." : infoData?.name}</title>
+    </Helmet>
     <Header>
       <Title>{state?.name ? state.name : loading ? "Loading..." : infoData?.name}</Title>
     </Header>
@@ -208,6 +200,18 @@ function Coin(){
         <Loader>Loading...</Loader>
       ) : (
         <>
+          <TabWrap>
+            <TabItem isActive={chartMatch !== null}>
+              <Link to="chart">Chart</Link>
+            </TabItem>
+            <TabItem isActive={priceMatch !== null}>
+              <Link to="price">Price</Link>
+            </TabItem>
+          </TabWrap>
+          <Routes>
+            <Route path="price" element={<Price />} />
+            <Route path="chart" element={<Chart coinId={id} />} />
+          </Routes>
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
@@ -218,8 +222,8 @@ function Coin(){
               <span>{infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>$ {priceData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
@@ -233,20 +237,6 @@ function Coin(){
               <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
-
-          <TabWrap>
-            <TabItem isActive={chartMatch !== null}>
-              <Link to="chart">Chart</Link>
-            </TabItem>
-            <TabItem isActive={priceMatch !== null}>
-              <Link to="price">Price</Link>
-            </TabItem>
-          </TabWrap>
-          
-          <Routes>
-            <Route path="price" element={<Price />} />
-            <Route path="chart" element={<Chart />} />
-          </Routes>
         </>
       )}
   </Container>);
