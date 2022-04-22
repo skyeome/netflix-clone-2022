@@ -1,13 +1,249 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Route, Routes, useLocation, useMatch, useParams } from "react-router-dom";
+import styled from "styled-components";
+import Chart from "./Chart";
+import Price from "./Price";
 
+
+const Container = styled.div`
+  padding:0 20px;
+  max-width: 480px;
+  margin:0 auto;
+`;
+
+const Title = styled.h1`
+  font-size:48px;
+`;
+const Header = styled.header`
+  height:10vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Loader = styled.div`
+  text-align: center;
+`;
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+`;
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p`
+  margin: 20px 0px;
+`;
+const TabWrap = styled.ul`
+  display: flex;
+  padding:8px;
+  margin: 10px 0;
+  background-color: ${props => props.theme.colors.text};
+  border-radius: ${props => props.theme.borderRadius};
+`;
+const TabItem = styled.li<{isActive:boolean}>`
+  width:50%;
+  text-align: center;
+  background-color: ${props => props.isActive ? props.theme.colors.main : "transparent"};
+  border-radius: 6px;
+  color:${props=>props.isActive ? props.theme.colors.text : props.theme.colors.bg};
+  a{
+    display: block;
+    padding: 10px;
+    color: inherit;
+  }
+`;
 interface Params {
   id:string;
 }
+interface RouteState {
+  state:{
+    name: string;
+  }
+}
+
+export interface IInfoData {
+  id:                 string;
+  name:               string;
+  symbol:             string;
+  rank:               number;
+  is_new:             boolean;
+  is_active:          boolean;
+  type:               string;
+  tags:               Tag[];
+  team:               Team[];
+  description:        string;
+  message:            string;
+  open_source:        boolean;
+  started_at:         Date;
+  development_status: string;
+  hardware_wallet:    boolean;
+  proof_type:         string;
+  org_structure:      string;
+  hash_algorithm:     string;
+  links:              Links;
+  links_extended:     LinksExtended[];
+  whitepaper:         Whitepaper;
+  first_data_at:      Date;
+  last_data_at:       Date;
+}
+
+export interface Links {
+  explorer:    string[];
+  facebook:    string[];
+  reddit:      string[];
+  source_code: string[];
+  website:     string[];
+  youtube:     string[];
+}
+
+export interface LinksExtended {
+  url:    string;
+  type:   string;
+  stats?: Stats;
+}
+
+export interface Stats {
+  subscribers?:  number;
+  contributors?: number;
+  stars?:        number;
+  followers?:    number;
+}
+
+export interface Tag {
+  id:           string;
+  name:         string;
+  coin_counter: number;
+  ico_counter:  number;
+}
+
+export interface Team {
+  id:       string;
+  name:     string;
+  position: string;
+}
+
+export interface Whitepaper {
+  link:      string;
+  thumbnail: string;
+}
+
+export interface IPriceData {
+  id:                 string;
+  name:               string;
+  symbol:             string;
+  rank:               number;
+  circulating_supply: number;
+  total_supply:       number;
+  max_supply:         number;
+  beta_value:         number;
+  first_data_at:      Date;
+  last_updated:       Date;
+  quotes:             Quotes;
+}
+
+export interface Quotes {
+  USD: Usd;
+}
+
+export interface Usd {
+  price:                  number;
+  volume_24h:             number;
+  volume_24h_change_24h:  number;
+  market_cap:             number;
+  market_cap_change_24h:  number;
+  percent_change_15m:     number;
+  percent_change_30m:     number;
+  percent_change_1h:      number;
+  percent_change_6h:      number;
+  percent_change_12h:     number;
+  percent_change_24h:     number;
+  percent_change_7d:      number;
+  percent_change_30d:     number;
+  percent_change_1y:      number;
+  ath_price:              number;
+  ath_date:               Date;
+  percent_from_price_ath: number;
+}
+
 
 function Coin(){
-  //const {id} = useParams();
+  const [loading, setLoading] = useState(true);
   const {id} = useParams() as unknown as Params;
-  console.log(id);
-  return (<h1>Coin</h1>);
+  const {state} = useLocation() as RouteState;
+  const [info, setInfo] = useState<IInfoData>();
+  const [priceInfo, setPriceInfo] = useState<IPriceData>();
+  const priceMatch = useMatch("/:id/price");
+  const chartMatch = useMatch("/:id/chart");
+  useEffect(()=>{
+    (async()=>{
+      const json = await (await fetch(`https://api.coinpaprika.com/v1/coins/${id}`)).json();
+      const priceData = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${id}`)).json();
+      setInfo(json);
+      setPriceInfo(priceData);
+      setLoading(false);
+    })();
+  },[id]);
+  return (
+  <Container>
+    <Header>
+      <Title>{state?.name ? state.name : loading ? "Loading..." : info?.name}</Title>
+    </Header>
+    {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>Rank:</span>
+              <span>{info?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Symbol:</span>
+              <span>{info?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Open Source:</span>
+              <span>{info?.open_source ? "Yes" : "No"}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>{info?.description}</Description>
+          <Overview>
+            <OverviewItem>
+              <span>Total Suply:</span>
+              <span>{priceInfo?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Max Supply:</span>
+              <span>{priceInfo?.max_supply}</span>
+            </OverviewItem>
+          </Overview>
+
+          <TabWrap>
+            <TabItem isActive={chartMatch !== null}>
+              <Link to="chart">Chart</Link>
+            </TabItem>
+            <TabItem isActive={priceMatch !== null}>
+              <Link to="price">Price</Link>
+            </TabItem>
+          </TabWrap>
+          
+          <Routes>
+            <Route path="price" element={<Price />} />
+            <Route path="chart" element={<Chart />} />
+          </Routes>
+        </>
+      )}
+  </Container>);
 }
 export default Coin;

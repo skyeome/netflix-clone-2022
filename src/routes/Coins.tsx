@@ -73,7 +73,7 @@ function Coins(){
       <CoinList>
         {loading ? <Loader>Loading...</Loader> : coins.map(coin=>
         <CoinItem key={coin.name}>
-          <Link to={`/${coin.id}`}>
+          <Link to={`/${coin.id}`} state={{name:coin.name}} >
             <Img src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`} />
             {coin.name} &rarr;
           </Link>
