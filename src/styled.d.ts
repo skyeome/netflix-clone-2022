@@ -8,7 +8,10 @@ declare module 'styled-components' {
     colors: {
       text: string;
       bg: string;
+      boxBg: string;
       main: string;
+      cardBg: string;
+      cardText: string;
     };
   }
 }

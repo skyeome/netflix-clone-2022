@@ -1,7 +1,7 @@
 //import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
-import { Link, Route, Routes, useLocation, useMatch, useParams } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useMatch, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
 import Chart from "./Chart";
@@ -22,6 +22,7 @@ const Header = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 `;
 const Loader = styled.div`
   text-align: center;
@@ -29,7 +30,7 @@ const Loader = styled.div`
 const Overview = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${props=>props.theme.colors.boxBg};
   padding: 10px 20px;
   border-radius: 10px;
 `;
@@ -51,7 +52,7 @@ const TabWrap = styled.ul`
   display: flex;
   padding:8px;
   margin: 10px 0;
-  background-color: ${props => props.theme.colors.text};
+  background-color: ${props => props.theme.colors.cardBg};
   border-radius: ${props => props.theme.borderRadius};
 `;
 const TabItem = styled.li<{isActive:boolean}>`
@@ -59,12 +60,24 @@ const TabItem = styled.li<{isActive:boolean}>`
   text-align: center;
   background-color: ${props => props.isActive ? props.theme.colors.main : "transparent"};
   border-radius: 6px;
-  color:${props=>props.isActive ? props.theme.colors.text : props.theme.colors.bg};
+  color:${props=>props.isActive ? props.theme.colors.cardBg : props.theme.colors.cardText};
   a{
     display: block;
     padding: 10px;
     color: inherit;
   }
+`;
+const TabCnt = styled.div`
+  height: 300px;
+`;
+const GoBack = styled.button`
+  color:${props=>props.theme.colors.text};
+  background:transparent;
+  border:0;
+  font-size:48px;
+  position: absolute;
+  left: 0;
+  top:15px;
 `;
 interface Params {
   id:string;
@@ -188,12 +201,14 @@ function Coin(){
   const {isLoading:infoLoading, data:infoData} = useQuery<IInfoData>(["info",id], ()=> fetchCoinInfo(id));
   const {isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["price",id], ()=> fetchCoinTickers(id),{refetchInterval:5000});
   const loading = infoLoading || priceLoading;
+  const navigate = useNavigate();
   return (
   <Container>
     <Helmet>
         <title>{state?.name ? state.name : loading ? "Loading..." : infoData?.name}</title>
     </Helmet>
     <Header>
+      <GoBack onClick={()=>navigate(-1)}>&larr;</GoBack>
       <Title>{state?.name ? state.name : loading ? "Loading..." : infoData?.name}</Title>
     </Header>
     {loading ? (
@@ -208,10 +223,12 @@ function Coin(){
               <Link to="price">Price</Link>
             </TabItem>
           </TabWrap>
-          <Routes>
-            <Route path="price" element={<Price />} />
-            <Route path="chart" element={<Chart coinId={id} />} />
-          </Routes>
+          <TabCnt>
+            <Routes>
+              <Route path="price" element={<Price coinId={id} />} />
+              <Route path="chart" element={<Chart coinId={id} />} />
+            </Routes>
+          </TabCnt>
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
