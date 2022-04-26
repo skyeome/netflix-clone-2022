@@ -1,5 +1,5 @@
 import Reset from "./Reset";
-import ToDoList from "./ToDoList";
+import ToDoList from "./components/ToDoList";
 
 function App() {
   return (
