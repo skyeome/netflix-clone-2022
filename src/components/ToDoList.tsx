@@ -1,7 +1,8 @@
 import React from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useEffect } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { Categories, categoryState, toDoSelector } from "../atoms";
+import { Categories, categoryState, toDoSelector, toDoState } from "../atoms";
 import CreateToDo from "./CreateToDo";
 import ToDo from "./ToDo";
 
@@ -18,6 +19,14 @@ function ToDoList(){
     const {currentTarget:{value}} = event;
     setCategory(value as any);
   };
+  const setToDos = useSetRecoilState(toDoState);
+  const local = localStorage.getItem("toDoState");
+  useEffect(()=>{
+    if(local !== null){
+      const toDoState = JSON.parse(local);
+      setToDos(toDoState);
+    }
+  },[local]);
   return <>
     <Container>
       <h1>To Dos</h1>
