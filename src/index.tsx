@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RecoilRoot } from 'recoil';
 import { ThemeProvider } from 'styled-components';
 import App from './App';
+import Reset from './Reset';
 import { darkTheme } from './theme';
 
 
@@ -12,6 +13,7 @@ root.render(
   <React.StrictMode>
     <RecoilRoot>
       <ThemeProvider theme={darkTheme}>
+        <Reset />
         <App />
       </ThemeProvider>
     </RecoilRoot>
