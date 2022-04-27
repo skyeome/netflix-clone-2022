@@ -31,7 +31,12 @@ footer, header, hgroup, main, menu, nav, section {
 *[hidden] {
     display: none;
 }
+html,body,#root{
+  height: 100%;
+}
 body {
+  font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color:${props => props.theme.colors.text};
   line-height: 1;
 }
 menu, ol, ul {
@@ -51,11 +56,6 @@ table {
 }
 *{
   box-sizing: border-box;
-}
-body{
-  font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: ${props => props.theme.colors.bg};
-  color:${props => props.theme.colors.text}
 }
 a {
   text-decoration: none;
