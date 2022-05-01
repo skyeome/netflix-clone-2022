@@ -31,13 +31,10 @@ footer, header, hgroup, main, menu, nav, section {
 *[hidden] {
     display: none;
 }
-html,body,#root{
-  height: 100%;
-}
 body {
   font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color:${props => props.theme.colors.text};
   line-height: 1;
+  background:linear-gradient(135deg,#e09,#d0e);
 }
 menu, ol, ul {
   list-style: none;

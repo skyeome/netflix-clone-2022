@@ -4,13 +4,15 @@ import 'styled-components';
 // and extend them!
 declare module 'styled-components' {
   export interface DefaultTheme {
-    borderRadius: string;
-    colors: {
-      text: string;
-      bg: string;
-      boardBg: string;
-      main: string;
-      cardBg: string;
+    red: string;
+    black: {
+      veryDark: string;
+      darker: string;
+      lighter: string;
     };
-  }
+    white: {
+      darker: string;
+      lighter: string;
+    };
+  }  
 }
