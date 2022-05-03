@@ -33,6 +33,8 @@ footer, header, hgroup, main, menu, nav, section {
 }
 body {
   font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: black;
+  color:${props=>props.theme.white.darker};
   line-height: 1;
 }
 menu, ol, ul {

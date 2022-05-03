@@ -1,7 +1,8 @@
-import {Link, useMatch} from "react-router-dom";
+import {Link, useMatch, useNavigate} from "react-router-dom";
 import styled from "styled-components";
 import { motion, useAnimation, useViewportScroll } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -13,8 +14,17 @@ const Nav = styled(motion.nav)`
   left:0;
   height: 80px;
   font-size:13px;
-  padding:20px 60px;
+  padding:10px 20px;
   color:white;
+  @media screen and (min-width: 43rem) {
+    padding:10px 30px;
+  }
+  @media screen and (min-width: 62rem) {
+    padding:20px 40px;
+  }
+  @media screen and (min-width: 82rem) {
+    padding:20px 60px;
+  }
 `;
 
 const Col = styled.div`
@@ -59,7 +69,7 @@ const Circle = styled(motion.span)`
   background-color: ${props=>props.theme.red};
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   position: relative;
   svg {
@@ -104,6 +114,10 @@ const navVariants = {
   }
 }
 
+interface IForm {
+  keyword:string;
+}
+
 function Header (){
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnim = useAnimation();
@@ -129,7 +143,10 @@ function Header (){
         navAnimation.start("up");
       }
     });
-  },[scrollY]);
+  },[scrollY,navAnimation]);
+  const navigate = useNavigate();
+  const {register, handleSubmit} = useForm<IForm>();
+  const onValid = (data:IForm) => {navigate("/search?keyword=" + data.keyword);};
   return <header>
     <Nav variants={navVariants} initial="up" animate={navAnimation}>
       <Col>
@@ -157,7 +174,7 @@ function Header (){
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg onClick={toggleSearch}
             animate={{x:searchOpen ? -160 : 0}}
             transition={{type:"just"}}
@@ -172,6 +189,8 @@ function Header (){
             ></path>
           </motion.svg>
           <Input
+            autoComplete="off"
+            {...register("keyword",{required:true,minLength:2})}
             initial={{scaleX:0}}
             animate={inputAnim}
             transition={{type:"just"}}
