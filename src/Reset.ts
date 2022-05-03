@@ -37,6 +37,11 @@ body {
   color:${props=>props.theme.white.darker};
   line-height: 1;
 }
+/* body 스크롤 방지용 */
+.stop-scroll{
+  height: 100%;
+  overflow: hidden;
+}
 menu, ol, ul {
   list-style: none;
 }

@@ -1,8 +1,9 @@
 import { AnimatePresence, motion, PanInfo, useViewportScroll } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { IGetMovies } from "../api";
+import { getMovieDetail, IGetMovieDetail, IGetMovies } from "../api";
 import { makeImagePath } from "../utils";
 (function() {
   var throttle = function(type:string, name:string, obj?:any) {
@@ -99,23 +100,49 @@ const BigMovie = styled(motion.div)<{}>`
 
 const BigCover = styled.div<{bgPhoto:string}>`
   background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,.4), rgba(0,0,0,1)), url(${props=>props.bgPhoto}) center center/cover no-repeat;
-  aspect-ratio: 16 / 9;
+  padding-top:56.25%;
   width: 100%;
+  position: relative;
+`;
+
+const BigTitle = styled.div`
+  position: absolute;
+  bottom:20px;
+  left:30px;
+  width: calc(100% - 60px);
+  h3{
+    font-size: 2em;
+    margin-bottom: 0.8rem;
+  }
+  h4{
+    font-size: 1.1em;
+    font-weight: 300;
+    color:${props=>props.theme.white.darker};
+  }
 `;
 
 const BigContent = styled.div`
-  padding:0 30px;
-  margin-top:-3em;
+  padding:20px 30px;
 `;
 
-const BigTitle = styled.h3`
-  font-size: 2em;
-  margin-bottom:2rem;
+const Genres = styled.div`
+  display: flex;
+  margin-bottom:1rem;
+  span{
+    font-size: 13px;
+    font-weight: 300;
+    padding: 6px 8px;
+    display: block;
+    background-color: rgba(255,255,255,.2);
+    border-radius: 3px;
+    margin:0 2px;
+  }
 `;
 
 const BigOverView = styled.p`
   font-size: 13px;
   line-height:1.5;
+  font-weight: 300;
   @media screen and (min-width: 43rem) {
     font-size: 14px;
   }
@@ -179,6 +206,7 @@ function Slider({data}:ISliderProps){
   const [offset,setOffset] = useState(3);
   const bigMovieMatch = useMatch("/movies/:movieId");
   const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie=>movie.id + "" === bigMovieMatch.params.movieId);
+  const {data:detail,isLoading} = useQuery<IGetMovieDetail>(["movie","detail"],()=> getMovieDetail(bigMovieMatch?.params.movieId),{enabled:!!clickedMovie});
   const {scrollY} = useViewportScroll();
   const [index,setIndex] = useState(0);
   const [leaving,setLeaving] = useState(false);
@@ -206,21 +234,21 @@ function Slider({data}:ISliderProps){
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo): void => {
     
     if(info.velocity.x < -100){
-      
       setIsBack(false);
       increaseIndex();
     }
     if(info.velocity.x > 100) {
-      
       setIsBack(true);
       decreaseIndex();
     }
   };
   const navigation = useNavigate();
-  const onOverlayClick = () => navigation("..");
-  const onBoxClicked = (movieId:number) => {navigation(`movies/${movieId}`);};
+  const onOverlayClick = () => window.history.back();
+  const onBoxClicked = (movieId:number) => {
+    navigation(`movies/${movieId}`);
+    document.body.classList.add("stop-scroll");
+  };
   useEffect(()=>{
-    
     const resizeHandler = () => {
       if(window.innerWidth <= 688){
         setOffset(breakpoints["mobile"].slidePerView);
@@ -284,16 +312,24 @@ function Slider({data}:ISliderProps){
       </Row>
     </AnimatePresence>
   </SlideWrap>
-  <AnimatePresence>
-    {bigMovieMatch ? 
+  <AnimatePresence onExitComplete={()=>document.body.classList.remove("stop-scroll")}>
+    {bigMovieMatch && !isLoading ? 
     <>
       <Overlay onClick={onOverlayClick} animate={{opacity:1}} exit={{opacity:0}} />
       <BigMovie layoutId={bigMovieMatch.params.movieId} style={{top:scrollY.get() + 100}}>
         {clickedMovie ? <>
-          <BigCover bgPhoto={makeImagePath(clickedMovie.backdrop_path || "", "w500")} />
+          <BigCover bgPhoto={makeImagePath(clickedMovie.backdrop_path || "", "w500")} >
+            <BigTitle>
+              <Genres>{detail?.genres.map(g=><span key={g.id}>{g.name}</span>)}</Genres>
+              <h3>{clickedMovie.title}</h3>
+              <h4>{detail?.original_title} ・ {detail?.release_date.toString().substring(0,4)}</h4>
+              <p>⭐️ {detail?.vote_average}</p>
+            </BigTitle>
+          </BigCover>
           <BigContent>
-            <BigTitle>{clickedMovie.title}</BigTitle>
+            <blockquote>{detail?.tagline}</blockquote>
             <BigOverView>{clickedMovie.overview}</BigOverView>
+            🏠 <a href={detail?.homepage} target="_blank" rel="noreferrer">{detail?.homepage}</a>
           </BigContent>
         </> : null}
       </BigMovie>
