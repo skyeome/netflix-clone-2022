@@ -9,6 +9,13 @@ export interface IGetMovies {
   total_results: number;
 }
 
+export interface IGetMoviesTopRated {
+  page: number
+  results: Result[]
+  total_pages: number
+  total_results: number
+}
+
 export interface Dates {
   maximum: Date;
   minimum: Date;
@@ -36,6 +43,9 @@ export function getMovies(){
   return fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=ko&page=1&region=kr`).then(resp => resp.json());
 }
 
+export function getMoviesTopRated(){
+  return fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=ko&page=1&region=kr`).then(resp=>resp.json());
+}
 
 export interface IGetMovieDetail {
   adult:                 boolean;

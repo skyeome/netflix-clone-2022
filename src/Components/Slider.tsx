@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovieDetail, IGetMovieDetail, IGetMovies } from "../api";
+import { getMovieDetail, IGetMovieDetail, IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
 (function() {
   var throttle = function(type:string, name:string, obj?:any) {
@@ -26,7 +26,16 @@ import { makeImagePath } from "../utils";
 
 const SlideWrap = styled.div`
   position:relative;
-  padding-top: 33%;
+  padding-top: 50%;
+  @media screen and (min-width: 43rem) {
+    padding-top: 38%;
+  }
+  @media screen and (min-width: 62rem) {
+    padding-top: 36%;
+  }
+  @media screen and (min-width: 82rem) {
+    padding-top: 33%;
+  }
 `;
 
 const Row = styled(motion.div)`
@@ -87,15 +96,24 @@ const Overlay = styled(motion.div)`
 
 const BigMovie = styled(motion.div)<{}>`
   position:absolute;
-  width:80vw;
+  width:100vw;
   max-width:640px;
-  height:80vh;
+  /* height:100vh; */
   background-color:${props=>props.theme.black.darker};
   left:0;
   right:0;
   margin:0 auto;
   border-radius: 10px;
   overflow: hidden;
+  @media screen and (min-width: 43rem) {
+    width:92vw;
+  }
+  @media screen and (min-width: 62rem) {
+    width:88vw;
+  }
+  @media screen and (min-width: 82rem) {
+    width:80vw;
+  }
 `;
 
 const BigCover = styled.div<{bgPhoto:string}>`
@@ -111,13 +129,32 @@ const BigTitle = styled.div`
   left:30px;
   width: calc(100% - 60px);
   h3{
-    font-size: 2em;
+    font-size: 1.25rem;
     margin-bottom: 0.8rem;
+    @media screen and (min-width: 43rem) {
+      font-size: 1.3rem;
+    }
+    @media screen and (min-width: 62rem) {
+      font-size: 1.6rem;
+    }
+    @media screen and (min-width: 82rem) {
+      font-size: 2em;
+    }
   }
   h4{
-    font-size: 1.1em;
+    font-size: 0.9em;
+    margin-bottom:8px;
     font-weight: 300;
     color:${props=>props.theme.white.darker};
+    @media screen and (min-width: 43rem) {
+      font-size: 1rem;
+    }
+    @media screen and (min-width: 62rem) {
+      font-size: 1rem;
+    }
+    @media screen and (min-width: 82rem) {
+      font-size: 1.1em;
+    }
   }
 `;
 
@@ -154,6 +191,7 @@ const BigOverView = styled.p`
   }
 `;
 let padding = 30;
+let top = 60;
 const rowVariants = {
   hidden:(isBack:boolean)=>{
     return ({
@@ -192,14 +230,14 @@ const infoVariants = {
 }
 
 const breakpoints = {
-  mobile:{slidePerView: 3, padding:30},
-  tablet:{slidePerView: 4, padding:40},
-  laptop:{slidePerView: 5, padding:60},
-  pc:{slidePerView: 6, padding:120},
+  mobile:{slidePerView: 3, padding:30, top: 60},
+  tablet:{slidePerView: 4, padding:40, top: 80},
+  laptop:{slidePerView: 5, padding:60, top: 80},
+  pc:{slidePerView: 6, padding:120, top: 100},
 }
 
 interface ISliderProps{
-  data: IGetMovies;
+  data: IGetMovies | IGetMoviesTopRated;
 }
 
 function Slider({data}:ISliderProps){
@@ -253,18 +291,22 @@ function Slider({data}:ISliderProps){
       if(window.innerWidth <= 688){
         setOffset(breakpoints["mobile"].slidePerView);
         padding = breakpoints["mobile"].padding;
+        top = breakpoints["mobile"].top;
       }
       if(window.innerWidth > 688){
         setOffset(breakpoints["tablet"].slidePerView);
         padding = breakpoints["tablet"].padding;
+        top = breakpoints["tablet"].top;
       }
       if(window.innerWidth > 992){
         setOffset(breakpoints["laptop"].slidePerView);
         padding = breakpoints["laptop"].padding;
+        top = breakpoints["laptop"].top;
       }
       if(window.innerWidth > 1312){
         setOffset(breakpoints["pc"].slidePerView);
         padding = breakpoints["pc"].padding;
+        top = breakpoints["pc"].top;
       }
     }
     resizeHandler();
@@ -316,7 +358,7 @@ function Slider({data}:ISliderProps){
     {bigMovieMatch && !isLoading ? 
     <>
       <Overlay onClick={onOverlayClick} animate={{opacity:1}} exit={{opacity:0}} />
-      <BigMovie layoutId={bigMovieMatch.params.movieId} style={{top:scrollY.get() + 100}}>
+      <BigMovie layoutId={bigMovieMatch.params.movieId} style={{top:scrollY.get() + top}}>
         {clickedMovie ? <>
           <BigCover bgPhoto={makeImagePath(clickedMovie.backdrop_path || "", "w500")} >
             <BigTitle>
@@ -329,7 +371,9 @@ function Slider({data}:ISliderProps){
           <BigContent>
             <blockquote>{detail?.tagline}</blockquote>
             <BigOverView>{clickedMovie.overview}</BigOverView>
+            {detail?.homepage !== "" ? <>
             🏠 <a href={detail?.homepage} target="_blank" rel="noreferrer">{detail?.homepage}</a>
+            </> : null}
           </BigContent>
         </> : null}
       </BigMovie>

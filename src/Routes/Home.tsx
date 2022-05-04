@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovies, IGetMovies } from "../api";
+import { getMovies, getMoviesTopRated, IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
 import Slider from "../Components/Slider";
 
@@ -66,9 +66,13 @@ const Overview = styled.p`
   }
 `;
 
+const Main = styled.main`
+  margin-top:-150px;
+`;
+
 const Section = styled.section`
   padding:0 15px;
-  margin-top:-150px;
+  margin-bottom:3rem;
   @media screen and (min-width: 43rem) {
     padding:0 20px;
   }
@@ -82,25 +86,40 @@ const Section = styled.section`
 
 
 const SliderTitle = styled.h3`
-  font-size: 2rem;
-  margin-bottom:20px;
+  font-size: 1.25rem;
+  margin-bottom: 1em;
+  @media screen and (min-width: 43rem) {
+    font-size: 1.5rem;
+  }
+  @media screen and (min-width: 62rem) {
+    font-size: 2rem;
+  }
+  @media screen and (min-width: 82rem) {
+    font-size: 3rem;
+  }
 `;
 
 
 
 function Home(){
   const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],getMovies);
-
+  const {data:topRated, isLoading:topIsLoading} = useQuery<IGetMoviesTopRated>(["movies","topRated"],getMoviesTopRated);
   return <Wrapper>
-    {isLoading ? <Loader>Loading...</Loader> : <>
+    {isLoading && topIsLoading ? <Loader>Loading...</Loader> : <>
       <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
         <Title>{data?.results[0].title}</Title>
         <Overview>{data?.results[0].overview}</Overview>
       </Banner>
-      <Section>
-        <SliderTitle>극장 동시상영</SliderTitle>
-        <Slider data={data!} />
-      </Section>
+      <Main>
+        <Section>
+          <SliderTitle>극장 동시상영</SliderTitle>
+          <Slider data={data!} />
+        </Section>
+        <Section>
+          <SliderTitle>최고 평점 영화</SliderTitle>
+          <Slider data={topRated!} />
+        </Section>
+      </Main>
     </>}
   </Wrapper>;
 }
