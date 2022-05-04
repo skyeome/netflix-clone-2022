@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { getMovies, getMoviesTopRated, IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
 import Slider from "../Components/Slider";
+import { AnimatePresence } from "framer-motion";
+import { useMatch } from "react-router-dom";
+import BigMovie from "../Components/BigMovie";
 
 
 
@@ -101,9 +104,12 @@ const SliderTitle = styled.h3`
 
 
 
+
 function Home(){
   const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],getMovies);
   const {data:topRated, isLoading:topIsLoading} = useQuery<IGetMoviesTopRated>(["movies","topRated"],getMoviesTopRated);
+  const bigMovieMatch = useMatch("/movies/:movieId");
+  console.log(bigMovieMatch?.params.movieId);
   return <Wrapper>
     {isLoading && topIsLoading ? <Loader>Loading...</Loader> : <>
       <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
@@ -119,8 +125,13 @@ function Home(){
           <SliderTitle>최고 평점 영화</SliderTitle>
           <Slider data={topRated!} />
         </Section>
+        <AnimatePresence onExitComplete={()=>document.body.classList.remove("stop-scroll")}>
+          {bigMovieMatch ? <BigMovie clickedId={bigMovieMatch?.params.movieId!}></BigMovie> : null}
+        </AnimatePresence>
       </Main>
     </>}
+    
   </Wrapper>;
+
 }
 export default Home;

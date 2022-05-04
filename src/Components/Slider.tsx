@@ -1,10 +1,10 @@
-import { AnimatePresence, motion, PanInfo, useViewportScroll } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovieDetail, IGetMovieDetail, IGetMovies, IGetMoviesTopRated } from "../api";
+import { IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
+import { useMediaQuery } from "../Utils/matches";
 (function() {
   var throttle = function(type:string, name:string, obj?:any) {
     obj = obj || window;
@@ -83,115 +83,8 @@ const Info = styled(motion.div)`
   padding:20px;
   background-color:${props=>props.theme.black.lighter};
 `;
-
-const Overlay = styled(motion.div)`
-  position: fixed;
-  top:0;
-  left:0;
-  width: 100%;
-  height: 100%;
-  background-color:rgba(0,0,0,.5);
-  opacity: 0;
-`;
-
-const BigMovie = styled(motion.div)<{}>`
-  position:absolute;
-  width:100vw;
-  max-width:640px;
-  /* height:100vh; */
-  background-color:${props=>props.theme.black.darker};
-  left:0;
-  right:0;
-  margin:0 auto;
-  border-radius: 10px;
-  overflow: hidden;
-  @media screen and (min-width: 43rem) {
-    width:92vw;
-  }
-  @media screen and (min-width: 62rem) {
-    width:88vw;
-  }
-  @media screen and (min-width: 82rem) {
-    width:80vw;
-  }
-`;
-
-const BigCover = styled.div<{bgPhoto:string}>`
-  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,.4), rgba(0,0,0,1)), url(${props=>props.bgPhoto}) center center/cover no-repeat;
-  padding-top:56.25%;
-  width: 100%;
-  position: relative;
-`;
-
-const BigTitle = styled.div`
-  position: absolute;
-  bottom:20px;
-  left:30px;
-  width: calc(100% - 60px);
-  h3{
-    font-size: 1.25rem;
-    margin-bottom: 0.8rem;
-    @media screen and (min-width: 43rem) {
-      font-size: 1.3rem;
-    }
-    @media screen and (min-width: 62rem) {
-      font-size: 1.6rem;
-    }
-    @media screen and (min-width: 82rem) {
-      font-size: 2em;
-    }
-  }
-  h4{
-    font-size: 0.9em;
-    margin-bottom:8px;
-    font-weight: 300;
-    color:${props=>props.theme.white.darker};
-    @media screen and (min-width: 43rem) {
-      font-size: 1rem;
-    }
-    @media screen and (min-width: 62rem) {
-      font-size: 1rem;
-    }
-    @media screen and (min-width: 82rem) {
-      font-size: 1.1em;
-    }
-  }
-`;
-
-const BigContent = styled.div`
-  padding:20px 30px;
-`;
-
-const Genres = styled.div`
-  display: flex;
-  margin-bottom:1rem;
-  span{
-    font-size: 13px;
-    font-weight: 300;
-    padding: 6px 8px;
-    display: block;
-    background-color: rgba(255,255,255,.2);
-    border-radius: 3px;
-    margin:0 2px;
-  }
-`;
-
-const BigOverView = styled.p`
-  font-size: 13px;
-  line-height:1.5;
-  font-weight: 300;
-  @media screen and (min-width: 43rem) {
-    font-size: 14px;
-  }
-  @media screen and (min-width: 62rem) {
-    font-size: 16px;
-  }
-  @media screen and (min-width: 82rem) {
-    font-size: 18px;
-  }
-`;
+let offset = 3;
 let padding = 30;
-let top = 60;
 const rowVariants = {
   hidden:(isBack:boolean)=>{
     return ({
@@ -241,11 +134,6 @@ interface ISliderProps{
 }
 
 function Slider({data}:ISliderProps){
-  const [offset,setOffset] = useState(3);
-  const bigMovieMatch = useMatch("/movies/:movieId");
-  const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie=>movie.id + "" === bigMovieMatch.params.movieId);
-  const {data:detail,isLoading} = useQuery<IGetMovieDetail>(["movie","detail"],()=> getMovieDetail(bigMovieMatch?.params.movieId),{enabled:!!clickedMovie});
-  const {scrollY} = useViewportScroll();
   const [index,setIndex] = useState(0);
   const [leaving,setLeaving] = useState(false);
   const [isBack,setIsBack] = useState(false);
@@ -257,7 +145,6 @@ function Slider({data}:ISliderProps){
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex(prev=> maxIndex <= prev ? 0 : prev+1);
     }
-    
   }
   const decreaseIndex = () => {
     if(data){
@@ -281,32 +168,27 @@ function Slider({data}:ISliderProps){
     }
   };
   const navigation = useNavigate();
-  const onOverlayClick = () => window.history.back();
   const onBoxClicked = (movieId:number) => {
-    navigation(`movies/${movieId}`);
+    setTimeout(()=>navigation(`/movies/${movieId}`),50);
     document.body.classList.add("stop-scroll");
   };
   useEffect(()=>{
     const resizeHandler = () => {
       if(window.innerWidth <= 688){
-        setOffset(breakpoints["mobile"].slidePerView);
+        offset = breakpoints["mobile"].slidePerView;
         padding = breakpoints["mobile"].padding;
-        top = breakpoints["mobile"].top;
       }
       if(window.innerWidth > 688){
-        setOffset(breakpoints["tablet"].slidePerView);
+        offset = breakpoints["tablet"].slidePerView;
         padding = breakpoints["tablet"].padding;
-        top = breakpoints["tablet"].top;
       }
       if(window.innerWidth > 992){
-        setOffset(breakpoints["laptop"].slidePerView);
+        offset = breakpoints["laptop"].slidePerView;
         padding = breakpoints["laptop"].padding;
-        top = breakpoints["laptop"].top;
       }
       if(window.innerWidth > 1312){
-        setOffset(breakpoints["pc"].slidePerView);
+        offset = breakpoints["pc"].slidePerView;
         padding = breakpoints["pc"].padding;
-        top = breakpoints["pc"].top;
       }
     }
     resizeHandler();
@@ -354,31 +236,6 @@ function Slider({data}:ISliderProps){
       </Row>
     </AnimatePresence>
   </SlideWrap>
-  <AnimatePresence onExitComplete={()=>document.body.classList.remove("stop-scroll")}>
-    {bigMovieMatch && !isLoading ? 
-    <>
-      <Overlay onClick={onOverlayClick} animate={{opacity:1}} exit={{opacity:0}} />
-      <BigMovie layoutId={bigMovieMatch.params.movieId} style={{top:scrollY.get() + top}}>
-        {clickedMovie ? <>
-          <BigCover bgPhoto={makeImagePath(clickedMovie.backdrop_path || "", "w500")} >
-            <BigTitle>
-              <Genres>{detail?.genres.map(g=><span key={g.id}>{g.name}</span>)}</Genres>
-              <h3>{clickedMovie.title}</h3>
-              <h4>{detail?.original_title} ・ {detail?.release_date.toString().substring(0,4)}</h4>
-              <p>⭐️ {detail?.vote_average}</p>
-            </BigTitle>
-          </BigCover>
-          <BigContent>
-            <blockquote>{detail?.tagline}</blockquote>
-            <BigOverView>{clickedMovie.overview}</BigOverView>
-            {detail?.homepage !== "" ? <>
-            🏠 <a href={detail?.homepage} target="_blank" rel="noreferrer">{detail?.homepage}</a>
-            </> : null}
-          </BigContent>
-        </> : null}
-      </BigMovie>
-    </> : null}
-  </AnimatePresence>
   </>
   );
 }
