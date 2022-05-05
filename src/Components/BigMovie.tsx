@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { getMovieDetail, IGetMovieDetail, Result } from "../api";
 import { makeImagePath } from "../utils";
 
-const Overlay = styled(motion.div)`
+export const Overlay = styled(motion.div)`
   position: fixed;
   top:0;
   left:0;
@@ -12,8 +12,9 @@ const Overlay = styled(motion.div)`
   height: 100%;
   background-color:rgba(0,0,0,.5);
   opacity: 0;
+  z-index: 100;
 `;
-const MovieModal = styled(motion.div)<{}>`
+export const MovieModal = styled(motion.div)`
   position:absolute;
   width:100vw;
   max-width:640px;
@@ -24,6 +25,7 @@ const MovieModal = styled(motion.div)<{}>`
   margin:0 auto;
   border-radius: 10px;
   overflow: hidden;
+  z-index: 100;
   @media screen and (min-width: 43rem) {
     width:92vw;
     top:60px;
@@ -38,14 +40,14 @@ const MovieModal = styled(motion.div)<{}>`
   }
 `;
 
-const BigCover = styled.div<{bgPhoto:string}>`
+export const BigCover = styled.div<{bgPhoto:string}>`
   background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,.4), rgba(0,0,0,1)), url(${props=>props.bgPhoto}) center center/cover no-repeat;
   padding-top:56.25%;
   width: 100%;
   position: relative;
 `;
 
-const BigTitle = styled.div`
+export const BigTitle = styled.div`
   position: absolute;
   bottom:20px;
   left:30px;
@@ -80,11 +82,11 @@ const BigTitle = styled.div`
   }
 `;
 
-const BigContent = styled.div`
+export const BigContent = styled.div`
   padding:20px 30px;
 `;
 
-const Genres = styled.div`
+export const Genres = styled.div`
   display: flex;
   margin-bottom:1rem;
   span{
@@ -98,7 +100,7 @@ const Genres = styled.div`
   }
 `;
 
-const BigOverView = styled.p`
+export const BigOverView = styled.p`
   font-size: 13px;
   line-height:1.5;
   font-weight: 300;
@@ -127,9 +129,9 @@ function BigMovie({clickedId}:IBigMovieProps){
       {detail ? <>
         <BigCover bgPhoto={makeImagePath(detail.backdrop_path || "", "w500")} >
           <BigTitle>
-            <Genres>{detail?.genres.map(g=><span key={g.id}>{g.name}</span>)}</Genres>
+            {detail.genres ? <Genres>{detail?.genres.map(g=><span key={g.id}>{g.name}</span>)}</Genres> : null}
             <h3>{detail.title}</h3>
-            <h4>{detail?.original_title} ・ {detail?.release_date.toString().substring(0,4)}</h4>
+            {detail.original_title ? <h4>{detail?.original_title} ・ {detail?.release_date.toString().substring(0,4)}</h4>:null}
             <p>⭐️ {detail?.vote_average}</p>
           </BigTitle>
         </BigCover>

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
-import { useMediaQuery } from "../Utils/matches";
 (function() {
   var throttle = function(type:string, name:string, obj?:any) {
     obj = obj || window;
@@ -83,7 +82,7 @@ const Info = styled(motion.div)`
   padding:20px;
   background-color:${props=>props.theme.black.lighter};
 `;
-let offset = 3;
+//let offset = 3;
 let padding = 30;
 const rowVariants = {
   hidden:(isBack:boolean)=>{
@@ -134,6 +133,7 @@ interface ISliderProps{
 }
 
 function Slider({data}:ISliderProps){
+  const [offset, setOffset] = useState(3);
   const [index,setIndex] = useState(0);
   const [leaving,setLeaving] = useState(false);
   const [isBack,setIsBack] = useState(false);
@@ -175,19 +175,23 @@ function Slider({data}:ISliderProps){
   useEffect(()=>{
     const resizeHandler = () => {
       if(window.innerWidth <= 688){
-        offset = breakpoints["mobile"].slidePerView;
+        //offset = breakpoints["mobile"].slidePerView;
+        setOffset(breakpoints["mobile"].slidePerView);
         padding = breakpoints["mobile"].padding;
       }
       if(window.innerWidth > 688){
-        offset = breakpoints["tablet"].slidePerView;
+        //offset = breakpoints["tablet"].slidePerView;
+        setOffset(breakpoints["tablet"].slidePerView);
         padding = breakpoints["tablet"].padding;
       }
       if(window.innerWidth > 992){
-        offset = breakpoints["laptop"].slidePerView;
+        //offset = breakpoints["laptop"].slidePerView;
+        setOffset(breakpoints["laptop"].slidePerView);
         padding = breakpoints["laptop"].padding;
       }
       if(window.innerWidth > 1312){
-        offset = breakpoints["pc"].slidePerView;
+        //offset = breakpoints["pc"].slidePerView;
+        setOffset(breakpoints["pc"].slidePerView);
         padding = breakpoints["pc"].padding;
       }
     }

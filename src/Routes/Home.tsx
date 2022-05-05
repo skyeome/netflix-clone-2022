@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovies, getMoviesTopRated, IGetMovies, IGetMoviesTopRated } from "../api";
+import { getMovies, IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
 import Slider from "../Components/Slider";
 import { AnimatePresence } from "framer-motion";
@@ -9,7 +9,7 @@ import BigMovie from "../Components/BigMovie";
 
 
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   overflow-x: hidden;
   padding:0 0 60px;
 `;
@@ -21,7 +21,7 @@ const Loader = styled.div`
   align-items: center;
 `;
 
-const Banner = styled.div<{bgPhoto:string}>`
+export const Banner = styled.div<{bgPhoto:string}>`
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -40,7 +40,7 @@ const Banner = styled.div<{bgPhoto:string}>`
   }
 `;
 
-const Title = styled.h2`
+export const Title = styled.h2`
   font-size: 2rem;
   margin-bottom: 1.5rem;
   @media screen and (min-width: 43rem) {
@@ -54,7 +54,7 @@ const Title = styled.h2`
   }
 `;
 
-const Overview = styled.p`
+export const Overview = styled.p`
   font-size: 13px;
   line-height:1.5;
   max-width: 540px;
@@ -69,11 +69,11 @@ const Overview = styled.p`
   }
 `;
 
-const Main = styled.main`
+export const Main = styled.main`
   margin-top:-150px;
 `;
 
-const Section = styled.section`
+export const Section = styled.section`
   padding:0 15px;
   margin-bottom:3rem;
   @media screen and (min-width: 43rem) {
@@ -88,7 +88,7 @@ const Section = styled.section`
 `;
 
 
-const SliderTitle = styled.h3`
+export const SliderTitle = styled.h3`
   font-size: 1.25rem;
   margin-bottom: 1em;
   @media screen and (min-width: 43rem) {
@@ -106,10 +106,9 @@ const SliderTitle = styled.h3`
 
 
 function Home(){
-  const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],getMovies);
-  const {data:topRated, isLoading:topIsLoading} = useQuery<IGetMoviesTopRated>(["movies","topRated"],getMoviesTopRated);
+  const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],()=>getMovies("now_playing"));
+  const {data:topRated, isLoading:topIsLoading} = useQuery<IGetMoviesTopRated>(["movies","topRated"],()=>getMovies("top_rated"));
   const bigMovieMatch = useMatch("/movies/:movieId");
-  console.log(bigMovieMatch?.params.movieId);
   return <Wrapper>
     {isLoading && topIsLoading ? <Loader>Loading...</Loader> : <>
       <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
