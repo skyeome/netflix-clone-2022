@@ -22,15 +22,23 @@ const Loader = styled.div`
 `;
 
 export const Banner = styled.div<{bgPhoto:string}>`
-  height: 100vh;
+  height: clamp(30rem, 75vh ,36rem);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   padding:15px;
-  background-image: linear-gradient(rgb(19, 16, 16,0),rgba(19, 16, 16,.7), rgba(0,0,0,1)), url(${props=>props.bgPhoto});
-  background-size:cover;
+  padding-bottom:4rem;
+  background-image: linear-gradient( rgba(19, 16, 16,0.25),rgba(0,0,0,1) 70%), url(${props=>props.bgPhoto});
+  background-position: top center;
+  background-size:160%;
+  background-repeat: no-repeat;
   @media screen and (min-width: 43rem) {
+    height: clamp(43rem, 100vh ,62rem);
+    justify-content: center;
     padding:20px;
+    padding-bottom:0px;
+    background-image: linear-gradient(rgb(19, 16, 16,0),rgba(19, 16, 16,.7), rgba(0,0,0,1)), url(${props=>props.bgPhoto});
+    background-size:cover;
   }
   @media screen and (min-width: 62rem) {
     padding:30px;
@@ -70,7 +78,16 @@ export const Overview = styled.p`
 `;
 
 export const Main = styled.main`
-  margin-top:-150px;
+  margin-top:0;
+  @media screen and (min-width: 43rem) {
+    margin-top:-150px;
+  }
+  @media screen and (min-width: 62rem) {
+    
+  }
+  @media screen and (min-width: 82rem) {
+    
+  }
 `;
 
 export const Section = styled.section`

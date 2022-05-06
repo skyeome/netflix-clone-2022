@@ -5,41 +5,46 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   position:fixed;
   width:100%;
   top:0;
   left:0;
-  height: 80px;
+  height: 66px;
   font-size:13px;
-  padding:10px 20px;
+  padding:20px;
+  padding-left:20px;
   color:white;
   @media screen and (min-width: 43rem) {
-    padding:10px 30px;
+    padding-left:30px;
   }
   @media screen and (min-width: 62rem) {
-    padding:20px 40px;
+    padding-left:40px;
   }
   @media screen and (min-width: 82rem) {
-    padding:20px 60px;
+    padding-left:60px;
   }
 `;
 
 const Col = styled.div`
   display: flex;
   align-items: center;
+
 `;
 
 const Logo = styled(motion.svg)`
-  margin-right:50px;
+  margin-right:60px;
   width:95px;
   height:25px;
   fill: ${props=>props.theme.red};
   path{
     stroke-width:6px;
     stroke:white;
+  }
+  @media screen and (min-width: 43rem) {
+    margin-right:50px;
   }
 `;
 
@@ -70,20 +75,34 @@ const Circle = styled(motion.span)`
 `;
 
 const Search = styled.form`
+  position: absolute;
+  top:20px;
+  right:20px;
   color: white;
-  position: relative;
   svg {
+    position: relative;
+    z-index: 3;
     height: 25px;
+  }
+  @media screen and (min-width: 43rem) {
+    right:30px;
+  }
+  @media screen and (min-width: 62rem) {
+    right:40px;
+  }
+  @media screen and (min-width: 82rem) {
+    right:60px;
   }
 `;
 
 const Input = styled(motion.input)`
   transform-origin:right center;
   position: absolute;
+  width: 220px;
   right:0;
   top:-4px;
   padding: 8px 10px;
-  padding-left: 36px;
+  padding-left: 33px;
   z-index: -1;
   color: white;
   font-size: 14px;
@@ -124,10 +143,10 @@ function Header (){
   const toggleSearch = () => {
     if(searchOpen){
       //검색창이 열려있을때는 닫는 애니메이션을 실행
-      inputAnim.start({ scaleX: 0 });
+      inputAnim.start({ scaleX: 0,backgroundColor:"rgba(0,0,0,0)",zIndex:-1 });
     } else {
       //검색창이 닫혀있을때는 여는 애니메이션을 실행
-      inputAnim.start({ scaleX: 1 });
+      inputAnim.start({ scaleX: 1,backgroundColor:"rgba(0,0,0,1)",zIndex:2 });
     }
     setSearchOpen(prev=>!prev)
   };
@@ -173,30 +192,28 @@ function Header (){
           </Item>
         </Items>
       </Col>
-      <Col>
-        <Search onSubmit={handleSubmit(onValid)}>
-          <motion.svg onClick={toggleSearch}
-            animate={{x:searchOpen ? -160 : 0}}
-            transition={{type:"just"}}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-              clipRule="evenodd"
-            ></path>
-          </motion.svg>
-          <Input
-            autoComplete="off"
-            {...register("keyword",{required:true,minLength:2})}
-            initial={{scaleX:0}}
-            animate={inputAnim}
-            transition={{type:"just"}}
-            placeholder="제목, 사람, 장르" />
-        </Search>
-      </Col>
+      <Search onSubmit={handleSubmit(onValid)}>
+        <motion.svg onClick={toggleSearch}
+          animate={{x:searchOpen ? -186 : 0}}
+          transition={{type:"just"}}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+            clipRule="evenodd"
+          ></path>
+        </motion.svg>
+        <Input
+          autoComplete="off"
+          {...register("keyword",{required:true,minLength:2})}
+          initial={{scaleX:0}}
+          animate={inputAnim}
+          transition={{type:"just"}}
+          placeholder="제목, 사람, 장르" />
+      </Search>
     </Nav>
   </header>;
 }

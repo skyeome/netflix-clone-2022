@@ -16,7 +16,8 @@ function App() {
         <Route path="/tv" element={<Tv />} />
         <Route path="/tv/:movieId" element={<Tv />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/search/:movieId" element={<Search />} />
+        <Route path="/search/movie/:movieId" element={<Search />} />
+        <Route path="/search/tv/:tvId" element={<Search />} />
       </Routes>
     </Router>
     <ReactQueryDevtools initialIsOpen={true}></ReactQueryDevtools>

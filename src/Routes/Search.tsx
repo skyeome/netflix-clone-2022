@@ -8,6 +8,7 @@ import 'swiper/css';
 import { AnimatePresence, motion } from "framer-motion";
 import BigMovie from "../Components/BigMovie";
 import { SliderTitle } from "./Home";
+import BigTvSeries from "../Components/BigTvSeries";
 
 
 const Wrapper = styled.div`
@@ -70,10 +71,15 @@ function Search(){
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
   const {data,isLoading} = useQuery<IGetSearch>(["search",keyword],()=>getSearch(keyword!),{enabled:!!keyword});
-  const bigMovieMatch = useMatch("/search/:movieId");
+  const bigMovieMatch = useMatch("/search/movie/:movieId");
+  const bigTvMatch = useMatch("/search/tv/:tvId");
   const navigate = useNavigate();
   const onBoxClicked = (movieId:number,keyword:string) => {
-    setTimeout(()=>navigate(`/search/${movieId}?keyword=${keyword}`),50);
+    setTimeout(()=>navigate(`/search/movie/${movieId}?keyword=${keyword}`),50);
+    document.body.classList.add("stop-scroll");
+  };
+  const onTvBoxClicked = (tvId:number, keyword:string) => {
+    setTimeout(()=>navigate(`/search/tv/${tvId}?keyword=${keyword}`),50);
     document.body.classList.add("stop-scroll");
   };
   return (<>
@@ -92,7 +98,7 @@ function Search(){
           <Section>
             <SliderTitle>TV 시리즈</SliderTitle>
             <Swiper slidesPerView={3} spaceBetween={10} breakpoints={breakpoints} className="tvSwiper">
-              {data?.results.filter(item=>item.media_type === "tv").map(item=><SwiperSlide key={"result"+item.id}><SearchItem layoutId={item.id+""} onClick={()=>onBoxClicked(item.id,keyword!)}>{item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : null}</SearchItem></SwiperSlide>)}
+              {data?.results.filter(item=>item.media_type === "tv").map(item=><SwiperSlide key={"result"+item.id}><SearchItem layoutId={item.id+""} onClick={()=>onTvBoxClicked(item.id,keyword!)}>{item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : null}</SearchItem></SwiperSlide>)}
             </Swiper>
           </Section>
         </main>
@@ -100,6 +106,9 @@ function Search(){
     </Wrapper>
     <AnimatePresence onExitComplete={()=>document.body.classList.remove("stop-scroll")}>
       {bigMovieMatch ? <BigMovie clickedId={bigMovieMatch?.params.movieId!}></BigMovie> : null}
+    </AnimatePresence>
+    <AnimatePresence onExitComplete={()=>document.body.classList.remove("stop-scroll")}>
+      {bigTvMatch ? <BigTvSeries clickedId={bigTvMatch?.params.tvId!}></BigTvSeries> : null}
     </AnimatePresence>
     </>
   )

@@ -14,7 +14,7 @@ function BigTvSeries({clickedId}:IBigTvProps){
   const onOverlayClick = () => window.history.back();
   return <>
   <Overlay onClick={onOverlayClick} animate={{opacity:1}} exit={{opacity:0}} />
-  <MovieModal layoutId={clickedId} style={{top:scrollY.get() + 80}}>
+  <MovieModal layoutId={clickedId} style={{top:scrollY.get() + 66}}>
     {detail ? <>
       <BigCover bgPhoto={makeImagePath(detail.backdrop_path || "", "w500")} >
         <BigTitle>
