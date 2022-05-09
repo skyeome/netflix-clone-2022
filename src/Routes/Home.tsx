@@ -5,7 +5,7 @@ import { makeImagePath } from "../utils";
 import Slider from "../Components/Slider";
 import { AnimatePresence } from "framer-motion";
 import { useMatch } from "react-router-dom";
-import BigMovie from "../Components/BigMovie";
+import BigMovie, { Genres } from "../Components/BigMovie";
 
 
 
@@ -119,8 +119,31 @@ export const SliderTitle = styled.h3`
   }
 `;
 
+type genreType = {
+  [key:number]:string;
+}
 
-
+const genres:genreType = {
+  28 : "액션",
+  12 : "모험",
+  16 : "애니메이션",
+  35 : "코미디",
+  80 : "범죄",
+  99 : "다큐멘터리",
+  18 : "드라마",
+  10751 : "가족",
+  14 : "판타지",
+  36 : "역사",
+  27 : "공포",
+  10402 : "음악",
+  9648 : "미스터리",
+  10749 : "로맨스",
+  878 : "SF",
+  10770 : "TV 영화",
+  53 : "스릴러",
+  10752 : "전쟁",
+  37 : "서부",
+};
 
 function Home(){
   const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],()=>getMovies("now_playing"));
@@ -129,6 +152,7 @@ function Home(){
   return <Wrapper>
     {isLoading && topIsLoading ? <Loader>Loading...</Loader> : <>
       <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
+      {data?.results[0].genre_ids ? <Genres>{data?.results[0].genre_ids.map(g=><span key={g}>{genres[g]}</span>)}</Genres> : null}
         <Title>{data?.results[0].title}</Title>
         <Overview>{data?.results[0].overview}</Overview>
       </Banner>
