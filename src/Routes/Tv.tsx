@@ -4,7 +4,7 @@ import { Lazy } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getTvSeries, IGetTvSeries } from "../api";
 import { makeImagePath } from "../utils";
-import { Banner, Main, Overview, Section, SliderTitle, Title, Wrapper } from "./Home";
+import { Banner, genreType, Main, Overview, Section, SliderTitle, Title, ViewBtn, Wrapper } from "./Home";
 import { SearchItem } from "./Search";
 
 // Import Swiper styles
@@ -13,72 +13,27 @@ import "swiper/css/lazy";
 import { AnimatePresence } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
 import BigTvSeries from "../Components/BigTvSeries";
+import { Genres } from "../Components/BigMovie";
+import { boxVariants } from "../Components/Slider";
 
-const genres = [{
-  "id": 10759,
-  "name": "액션 & 어드벤처"
-},
-{
-  "id": 16,
-  "name": "애니메이션"
-},
-{
-  "id": 35,
-  "name": "코미디"
-},
-{
-  "id": 80,
-  "name": "범죄"
-},
-{
-  "id": 99,
-  "name": "다큐멘터리"
-},
-{
-  "id": 18,
-  "name": "드라마"
-},
-{
-  "id": 10751,
-  "name": "가족"
-},
-{
-  "id": 10762,
-  "name": "키즈"
-},
-{
-  "id": 9648,
-  "name": "미스터리"
-},
-{
-  "id": 10763,
-  "name": "뉴스"
-},
-{
-  "id": 10764,
-  "name": "리얼리티"
-},
-{
-  "id": 10765,
-  "name": "공상과학 & 판타지"
-},
-{
-  "id": 10766,
-  "name": "연속극"
-},
-{
-  "id": 10767,
-  "name": "토크"
-},
-{
-  "id": 10768,
-  "name": "전쟁 & 정치"
-},
-{
-  "id": 37,
-  "name": "서부"
-}];
-
+const genres:genreType = {
+  10759:"액션 & 어드벤처",
+  16:"애니메이션",
+  35:"코미디",
+  80:"범죄",
+  99:"다큐멘터리",
+  18:"드라마",
+  10751:"가족",
+  10762:"키즈",
+  9648:"미스터리",
+  10763:"뉴스",
+  10764:"리얼리티",
+  10765:"공상과학 & 판타지",
+  10766:"연속극",
+  10767:"토크",
+  10768:"전쟁 & 정치",
+  37:"서부",
+};
 const breakpoints = {
   688:{
     slidesPerView:4
@@ -110,8 +65,17 @@ function Tv(){
     <Wrapper>
       {!(isLoading) ? <>
       <Banner bgPhoto={makeImagePath(results[0].data?.results[0].backdrop_path || "")}>
+        {results[0].data?.results[0].genre_ids ? <Genres>{results[0].data?.results[0].genre_ids.map(g=><span key={g}>{genres[g]}</span>)}</Genres> : null}
         <Title>{results[0].data?.results[0].name}</Title>
         <Overview>{results[0].data?.results[0].overview}</Overview>
+        <div>
+          <ViewBtn 
+          variants={boxVariants}
+          initial="normal"
+          transition={{type:"tween"}}
+          onTap={()=>onBoxClicked(results[0].data?.results[0].id!)}
+          layoutId={results[0].data?.results[0].id+""}>자세히 보기</ViewBtn>
+        </div>
       </Banner>
       <Main>
         <Section>

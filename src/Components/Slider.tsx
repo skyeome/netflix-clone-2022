@@ -99,7 +99,7 @@ const rowVariants = {
     })
   }
 };
-const boxVariants = {
+export const boxVariants = {
   normal:{
     scale:1
   },

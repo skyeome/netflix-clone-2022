@@ -55,7 +55,7 @@ export const SearchItem = styled(motion.div)`
     vertical-align: top;
   }
 `;
-const breakpoints = {
+export const breakpoints = {
   688:{
     slidesPerView:4
   },

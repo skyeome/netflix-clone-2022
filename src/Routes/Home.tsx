@@ -2,9 +2,9 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getMovies, IGetMovies, IGetMoviesTopRated } from "../api";
 import { makeImagePath } from "../utils";
-import Slider from "../Components/Slider";
-import { AnimatePresence } from "framer-motion";
-import { useMatch } from "react-router-dom";
+import Slider, { boxVariants } from "../Components/Slider";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMatch, useNavigate } from "react-router-dom";
 import BigMovie, { Genres } from "../Components/BigMovie";
 
 
@@ -77,6 +77,16 @@ export const Overview = styled.p`
   }
 `;
 
+export const ViewBtn = styled(motion.div)`
+  cursor: pointer;
+  display: inline-block;
+  padding:.8em 1.2em;
+  margin-top:2em;
+  background-color: white;
+  border-radius: 8px;
+  color:${props=>props.theme.black.lighter};
+`;
+
 export const Main = styled.main`
   margin-top:0;
   @media screen and (min-width: 43rem) {
@@ -119,7 +129,7 @@ export const SliderTitle = styled.h3`
   }
 `;
 
-type genreType = {
+export type genreType = {
   [key:number]:string;
 }
 
@@ -149,12 +159,25 @@ function Home(){
   const {data,isLoading} = useQuery<IGetMovies>(["movies","nowPlaying"],()=>getMovies("now_playing"));
   const {data:topRated, isLoading:topIsLoading} = useQuery<IGetMoviesTopRated>(["movies","topRated"],()=>getMovies("top_rated"));
   const bigMovieMatch = useMatch("/movies/:movieId");
+  const navigation = useNavigate();
+  const onBoxClicked = (movieId:number) => {
+    setTimeout(()=>navigation(`/movies/${movieId}`),50);
+    document.body.classList.add("stop-scroll");
+  };
   return <Wrapper>
     {isLoading && topIsLoading ? <Loader>Loading...</Loader> : <>
       <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
-      {data?.results[0].genre_ids ? <Genres>{data?.results[0].genre_ids.map(g=><span key={g}>{genres[g]}</span>)}</Genres> : null}
+        {data?.results[0].genre_ids ? <Genres>{data?.results[0].genre_ids.map(g=><span key={g}>{genres[g]}</span>)}</Genres> : null}
         <Title>{data?.results[0].title}</Title>
         <Overview>{data?.results[0].overview}</Overview>
+        <div>
+          <ViewBtn 
+          variants={boxVariants}
+          initial="normal"
+          transition={{type:"tween"}}
+          onTap={()=>onBoxClicked(data?.results[0].id!)}
+          layoutId={data?.results[0].id+""}>자세히 보기</ViewBtn>
+        </div>
       </Banner>
       <Main>
         <Section>
@@ -175,3 +198,7 @@ function Home(){
 
 }
 export default Home;
+
+function onBoxClicked(id: any): void {
+  throw new Error("Function not implemented.");
+}

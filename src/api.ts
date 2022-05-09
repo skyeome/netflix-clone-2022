@@ -1,4 +1,4 @@
-const API_KEY = "7745dfac93b5fd660453a17696753913";
+const API_KEY = process.env.REACT_APP_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 
 export interface IGetMovies {
@@ -290,4 +290,31 @@ export interface Videos{
 
 export function getTvDetail(tvId:string){
   return fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=ko`).then(resp=>resp.json());
+}
+
+export interface IMovieCredits {
+  id:   number;
+  cast: Cast[];
+  crew: Cast[];
+}
+
+export interface Cast {
+  adult:                boolean;
+  gender:               number;
+  id:                   number;
+  known_for_department: string;
+  name:                 string;
+  original_name:        string;
+  popularity:           number;
+  profile_path:         null | string;
+  cast_id?:             number;
+  character?:           string;
+  credit_id:            string;
+  order?:               number;
+  department?:          string;
+  job?:                 string;
+}
+
+export function getMovieCredits(type:string,id:string){
+  return fetch(`${BASE_URL}/${type}/${id}/credits?api_key=${API_KEY}&language=ko`).then(resp=>resp.json());
 }
