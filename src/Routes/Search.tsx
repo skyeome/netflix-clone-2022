@@ -49,8 +49,12 @@ const Titles = styled.div`
   }
 `;
 export const SearchItem = styled(motion.div)`
-
+  position: relative;
+  padding:150% 0 0;
   img{
+    position: absolute;
+    top:0;
+    left:0;
     max-width: 100%;
     vertical-align: top;
   }
@@ -92,13 +96,32 @@ function Search(){
           <Section>
             <SliderTitle>영화</SliderTitle>
             <Swiper slidesPerView={3} spaceBetween={10} breakpoints={breakpoints} className="movieSwiper">
-              {data?.results.filter(item=>item.media_type === "movie").map(item=><SwiperSlide key={"result"+item.id}><SearchItem layoutId={item.id+""} onClick={()=>onBoxClicked(item.id,keyword!)}>{item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : item.title}</SearchItem></SwiperSlide>)}
+              {
+                data?.results
+                  .filter(item=>item.media_type === "movie")
+                  .map(item=>
+                    <SwiperSlide key={"result"+item.id}>
+                      <SearchItem layoutId={item.id+""} onClick={()=>onBoxClicked(item.id,keyword!)}>
+                        {item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : item.title}
+                      </SearchItem>
+                    </SwiperSlide>)
+              }
             </Swiper>
           </Section>
           <Section>
             <SliderTitle>TV 시리즈</SliderTitle>
             <Swiper slidesPerView={3} spaceBetween={10} breakpoints={breakpoints} className="tvSwiper">
-              {data?.results.filter(item=>item.media_type === "tv").map(item=><SwiperSlide key={"result"+item.id}><SearchItem layoutId={item.id+""} onClick={()=>onTvBoxClicked(item.id,keyword!)}>{item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : null}</SearchItem></SwiperSlide>)}
+              {
+                data?.results
+                  .filter(item=>item.media_type === "tv")
+                  .map(item=>
+                    <SwiperSlide key={"result"+item.id}>
+                      <SearchItem layoutId={item.id+""} onClick={()=>onTvBoxClicked(item.id,keyword!)}>
+                        {item.poster_path !== null ? <img src={makeImagePath(item.poster_path || "","w500")} alt={item.title} /> : null}
+                      </SearchItem>
+                    </SwiperSlide>
+                )
+              }
             </Swiper>
           </Section>
         </main>

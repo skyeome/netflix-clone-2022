@@ -52,6 +52,13 @@ export const MovieModal = styled(motion.div)`
   }
 `;
 
+export const HomeLink = styled.a`
+  position: absolute;
+  top:20px;
+  right:20px;
+  stroke: white;
+`;
+
 export const ScrollArea = styled.div``;
 
 export const BigCover = styled.div<{bgPhoto:string}>`
