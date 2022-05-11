@@ -204,6 +204,9 @@ function BigMovie({clickedId}:IBigMovieProps){
               {detail.original_title ? <h4>{detail?.original_title} ・ {detail?.release_date.toString().substring(0,4)}</h4>:null}
               <p>⭐️ {detail?.vote_average}</p>
             </BigTitle>
+            {detail?.homepage !== "" ? <>
+            <HomeLink href={detail?.homepage} target="_blank" rel="noreferrer"><img src={`${process.env.PUBLIC_URL}/home.svg`} /></HomeLink>
+            </> : null}
           </BigCover>
           <BigContent>
             <blockquote>{detail?.tagline}</blockquote>
