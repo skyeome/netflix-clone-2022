@@ -186,7 +186,10 @@ function Search() {
         onExitComplete={() => document.body.classList.remove("stop-scroll")}
       >
         {bigTvMatch ? (
-          <BigTvSeries clickedId={bigTvMatch?.params.tvId!}></BigTvSeries>
+          <BigTvSeries
+            clickedId={bigTvMatch?.params.tvId!}
+            type=""
+          ></BigTvSeries>
         ) : null}
       </AnimatePresence>
     </>

@@ -71,17 +71,11 @@ function Tv() {
   ]) as UseQueryResult<IGetTvSeries>[];
   const isLoading = results.some((item) => item.isLoading);
   const bigTvMatch = useMatch("/tv/:movieId");
+  const [typeId, setTypeId] = useState("main");
   const navigate = useNavigate();
   const onBoxClicked = (movieId: number, type: string) => {
-    setTimeout(
-      () =>
-        navigate(`/tv/${movieId}`, {
-          state: {
-            type: type,
-          },
-        }),
-      50
-    );
+    setTimeout(() => navigate(`/tv/${movieId}`), 50);
+    setTypeId(type);
     document.body.classList.add("stop-scroll");
   };
   useEffect(() => {}, [results]);
@@ -227,7 +221,10 @@ function Tv() {
         onExitComplete={() => document.body.classList.remove("stop-scroll")}
       >
         {bigTvMatch ? (
-          <BigTvSeries clickedId={bigTvMatch?.params.movieId!}></BigTvSeries>
+          <BigTvSeries
+            clickedId={bigTvMatch?.params.movieId!}
+            type={typeId}
+          ></BigTvSeries>
         ) : null}
       </AnimatePresence>
     </Wrapper>

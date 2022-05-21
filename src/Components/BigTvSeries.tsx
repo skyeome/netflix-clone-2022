@@ -94,6 +94,7 @@ const EpisodeTxt = styled.div`
 
 interface IBigTvProps {
   clickedId: string;
+  type?: string;
 }
 
 interface RouteState {
@@ -102,10 +103,7 @@ interface RouteState {
   };
 }
 
-function BigTvSeries({ clickedId }: IBigTvProps) {
-  const {
-    state: { type },
-  } = useLocation() as RouteState;
+function BigTvSeries({ clickedId, type }: IBigTvProps) {
   const { scrollY } = useViewportScroll();
   const { data: detail, isLoading: bigIsLoading } = useQuery<IGetTvDetail>(
     ["tv", "detail"],
@@ -116,8 +114,7 @@ function BigTvSeries({ clickedId }: IBigTvProps) {
     useQuery<IMovieCredits>(["tv", "credits"], () =>
       getMovieCredits("tv", clickedId)
     );
-  const navigate = useNavigate();
-  const onOverlayClick = () => navigate("/tv", { state: { type: type } });
+  const onOverlayClick = () => window.history.back();
   return (
     <>
       <Overlay
